@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}User Profiles{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+    {% if profiles %}
+        <div class="px-20 grid grid-cols-3 gap-6 justify-center">
+            {% for profile in profiles %}
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg shadow-md p-6 flex flex-col items-center"
+                style="width: 400px; height: 350px; margin: 5%;">
+                
+                <!-- Avatar -->
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}"
+                        class="w-24 h-24 rounded-full object-cover mb-4">
+                {% else %}
+                    <img src="https://via.placeholder.com/100" alt="No Avatar"
+                        class="w-32 h-32 rounded-full object-cover mb-4">
+                {% endif %}
+
+                <!-- User info -->
+                <div class="flex-1 w-full overflow-y-hidden text-center">
+                    <strong class="text-xl font-semibold text-gray-900">{{ profile.user.username }}</strong>
+                    <div class="text-left">
+                        <p class="text-md text-gray-700 mt-2">{{ profile.feedback }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-gray-600 mt-4">No profiles available.</p>
+    {% endif %}
+
+{% endblock %}
