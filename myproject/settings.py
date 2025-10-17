@@ -164,11 +164,9 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Static files (CSS, JavaScript, images you include in your app)
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"     # where 'collectstatic' will gather files for production
-STATICFILES_DIRS = [
-    BASE_DIR / "static" ,
-]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")     # where 'collectstatic' will gather files for production
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # Storage backend for static files
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -177,3 +175,4 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
