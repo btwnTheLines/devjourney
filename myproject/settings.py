@@ -60,23 +60,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
-"""
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
-}
-
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_URL = '/media/'
-
-import dj_database_url 
-
-DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABSE_URL'))
-}
-"""
-
 # Use secure cookies
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -86,17 +69,6 @@ SECURE_SSL_REDIRECT = True
 
 # Prevent clickjacking
 X_FRAME_OPTIONS = "DENY"
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'mydb',
-#         'USER': 'myuser',
-#         'PASSWORD': 'mypassword',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
 
 DATABASES = {
     "default": dj_database_url.config(
@@ -161,9 +133,22 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Media files (user uploads like avatars)
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / "media"
+# settings.py (production path)
+USE_CLOUDINARY = os.getenv("USE_CLOUDINARY", "False") == "True"
+
+
+if USE_CLOUDINARY:
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+        "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+        "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+    }
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    MEDIA_URL = "/media/"   # prefix is fine; Cloudinary returns full CDN URLs per file
+else:
+    # Media files (user uploads like avatars)
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
 
 # Static files (CSS, JavaScript, images you include in your app)
 STATIC_URL = '/static/'
@@ -177,5 +162,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 
