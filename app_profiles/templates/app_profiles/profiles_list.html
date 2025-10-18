@@ -14,7 +14,7 @@
                 
                 <!-- Avatar -->
                 {% if profile.avatar %}
-                    <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}"
+                    <img src="{{ user.profile.avatar.url }}" alt="{{ profile.user.username }}"
                         class="w-24 h-24 rounded-full object-cover mb-4">
                 {% else %}
                     <img src="https://via.placeholder.com/100" alt="No Avatar"
@@ -36,3 +36,4 @@
     {% endif %}
 
 {% endblock %}
+
