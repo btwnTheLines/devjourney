@@ -165,3 +165,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+
+import logging
+logger = logging.getLogger(__name__)
+logger.warning("STORAGE_CHECK: DEFAULT_FILE_STORAGE=%s USE_CLOUDINARY=%s",
+               DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in globals() else None,
+               os.getenv("USE_CLOUDINARY"))
