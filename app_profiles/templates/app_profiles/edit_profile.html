@@ -52,7 +52,7 @@
                 <input type="file" name="{{ profile_form.avatar.name }}" id="{{ profile_form.avatar.id_for_label }}"
                        class="w-full p-2 border border-gray-300 rounded-lg bg-white text-black file:bg-gray-200 file:text-black file:border-none file:p-2 hover:file:bg-gray-300">
                 {% if profile_form.instance.avatar %}
-                    <img src="{{ profile_form.instance.avatar.url }}" alt="Avatar"
+                    <img src="{{ user.profile.avatar.url }}" alt="Avatar"
                          class="mt-2 w-32 h-32 rounded-full object-cover border">
                 {% endif %}
                 {% for error in profile_form.avatar.errors %}
@@ -79,3 +79,4 @@
     </div>
 </div>
 {% endblock %}
+
