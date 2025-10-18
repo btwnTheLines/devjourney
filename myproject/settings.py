@@ -28,6 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-default-key")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 
 # Application definition
@@ -99,8 +100,9 @@ X_FRAME_OPTIONS = "DENY"
 
 DATABASES = {
     "default": dj_database_url.config(
-        default="postgresql://postgres:mypassword@localhost:5432/mydb",
+        default=os.environ.get("DATABASE_URL"),   # set this in Render
         conn_max_age=600,  # keep connections alive for performance
+        ssl_require=True,                         # <- important on Render
     )
 }
 
@@ -175,4 +177,5 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
