@@ -144,7 +144,6 @@ if USE_CLOUDINARY:
         "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
     }
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    MEDIA_URL = "/media/"   # prefix is fine; Cloudinary returns full CDN URLs per file
 else:
     # Media files (user uploads like avatars)
     MEDIA_URL = "/media/"
@@ -171,3 +170,4 @@ logger = logging.getLogger(__name__)
 logger.warning("STORAGE_CHECK: DEFAULT_FILE_STORAGE=%s USE_CLOUDINARY=%s",
                DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in globals() else None,
                os.getenv("USE_CLOUDINARY"))
+
