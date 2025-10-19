@@ -111,4 +111,18 @@ else:
 # --- Static Files ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFI
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# --- Default Primary Key Field ---
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- Logging ---
+import logging
+logger = logging.getLogger(__name__)
+logger.warning(
+    "STORAGE_CHECK: DEFAULT_FILE_STORAGE=%s USE_CLOUDINARY=%s CLOUDINARY_URL=%s",
+    DEFAULT_FILE_STORAGE if 'DEFAULT_FILE_STORAGE' in globals() else None,
+    os.getenv("USE_CLOUDINARY"),
+    os.getenv("CLOUDINARY_URL")[:30] + "..." if os.getenv("CLOUDINARY_URL") else None
+)
