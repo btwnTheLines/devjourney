@@ -5,10 +5,10 @@
 
 {% block content %}
 <div class="flex flex-col justify-center px-4">
-    <div class="w-full max-w-2xl bg-gray-100 backdrop-blur-md rounded-2xl p-10 shadow-lg mx-auto">
+    <div class="w-full max-w-2xl bg-gray-100 backdrop-blur-md rounded-2xl p-8 shadow-lg mx-auto">
         <h1 class="text-3xl font-bold mb-6 text-center text-gray-900">Edit Your Profile</h1>
 
-        <form method="post" enctype="multipart/form-data" class="space-y-5">
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
             {% csrf_token %}
             {{ user_form.non_field_errors }}
             {{ profile_form.non_field_errors }}
@@ -52,7 +52,7 @@
                 <input type="file" name="{{ profile_form.avatar.name }}" id="{{ profile_form.avatar.id_for_label }}"
                        class="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 file:bg-gray-200 file:text-gray-900 file:border-none file:p-2 hover:file:bg-gray-300">
                 {% if profile_form.instance.avatar %}
-                    <img src="{{ profile_form.instance.avatar.url }}" alt="Avatar"
+                    <img src="{{ profile_form.avatar.url }}" alt="Avatar"
                          class="mt-2 w-32 h-32 rounded-full object-cover border border-gray-300">
                 {% endif %}
                 {% for error in profile_form.avatar.errors %}
@@ -79,6 +79,7 @@
     </div>
 </div>
 {% endblock %}
+
 
 
 
