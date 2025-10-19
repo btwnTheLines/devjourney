@@ -117,6 +117,11 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # --- Default Primary Key Field ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Add redirect URLs for login and logout
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
+
 # --- Logging ---
 import logging
 logger = logging.getLogger(__name__)
@@ -126,3 +131,4 @@ logger.warning(
     os.getenv("USE_CLOUDINARY"),
     os.getenv("CLOUDINARY_URL")[:30] + "..." if os.getenv("CLOUDINARY_URL") else None
 )
+
