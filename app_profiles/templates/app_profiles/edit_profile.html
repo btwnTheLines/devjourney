@@ -48,14 +48,19 @@
 
             <!-- Avatar -->
             <div>
-                <!-- Avatar (styled, still works with Cloudinary) -->
-                <label for="{{ profile_form.avatar.id_for_label }}" class="block font-semibold mb-1 text-gray-800">Avatar (optional)</label>
+                <label for="{{ profile_form.avatar.id_for_label }}" class="block font-semibold mb-1 text-gray-800">
+                    Avatar (optional)
+                </label>
+            
                 <input type="file" name="{{ profile_form.avatar.name }}" id="{{ profile_form.avatar.id_for_label }}"
-                       class="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 file:bg-gray-200 file:text-gray-900 file:border-none file:p-2 hover:file:bg-gray-300">
+                       class="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900
+                              file:bg-gray-200 file:text-gray-900 file:border-none file:p-2 hover:file:bg-gray-300">
+            
                 {% if profile_form.instance.avatar %}
-                    <img src="{{ profile_form.avatar.url }}" alt="Avatar"
+                    <img src="{{ profile_form.instance.avatar.url }}" alt="Avatar"
                          class="mt-2 w-32 h-32 rounded-full object-cover border border-gray-300">
                 {% endif %}
+            
                 {% for error in profile_form.avatar.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
@@ -80,6 +85,7 @@
     </div>
 </div>
 {% endblock %}
+
 
 
 
