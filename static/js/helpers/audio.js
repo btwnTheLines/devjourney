@@ -1,6 +1,5 @@
 // helpers/audio.js
-// Smooth stereo panning that crosses left<->right twice as the camera x moves 0..60.
-// Pan uses a StereoPannerNode (DAW-style). No 3D/HRTF here.
+// HARD stereo panning: fully left/right based on camera.x, two full sweeps (0..60)
 
 import { camera } from "../core/threeSetup.js";
 
@@ -9,62 +8,45 @@ export const audioContext = new (window.AudioContext || window.webkitAudioContex
 let audioBuffer = null;
 let source = null;
 
-// Primary node: StereoPanner (simple stereo balance)
-let stereo = null;
-
-// Fallback (rare older browsers): manual L/R via gains
+// Manual L/R control
 let splitter = null;
 let leftGain = null;
 let rightGain = null;
 let merger = null;
 
-function hasStereoPannerSupport() {
-  try {
-    return typeof window.StereoPannerNode === "function";
-  } catch {
-    return false;
-  }
-}
-
 // ------------------------
-// Load audio into a buffer
+// Load audio
 // ------------------------
 export async function loadAudio(url) {
-  const response = await fetch(url);
-  const arrayBuffer = await response.arrayBuffer();
-  audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  const res = await fetch(url);
+  const buf = await res.arrayBuffer();
+  audioBuffer = await audioContext.decodeAudioData(buf);
 }
 
 // ------------------------
-// Create (or reuse) the output chain
+// Create channel chain:  Mono/Stereo → Split → Gains → Merge → Destination
 // ------------------------
 function ensureOutputChain() {
-  if (hasStereoPannerSupport()) {
-    if (!stereo) {
-      stereo = new StereoPannerNode(audioContext, { pan: 0 });
-      stereo.connect(audioContext.destination);
-    }
-  } else if (!splitter) {
-    // Build a StereoPanner fallback: Source -> Split -> Gains -> Merge -> Destination
-    splitter = audioContext.createChannelSplitter(2);
-    leftGain = audioContext.createGain();
-    rightGain = audioContext.createGain();
-    merger = audioContext.createChannelMerger(2);
+  if (splitter) return;
 
-    // Route left input to both channels with gains we control (classic pan law not enforced here)
-    splitter.connect(leftGain, 0);
-    splitter.connect(rightGain, 1);
+  splitter = audioContext.createChannelSplitter(2);
+  leftGain = audioContext.createGain();
+  rightGain = audioContext.createGain();
+  merger = audioContext.createChannelMerger(2);
 
-    // Rebuild stereo
-    leftGain.connect(merger, 0, 0);   // to left
-    rightGain.connect(merger, 0, 1);  // to right
+  // Connect both input channels to both gain nodes (so mono works too)
+  splitter.connect(leftGain, 0);
+  splitter.connect(rightGain, 0);
 
-    merger.connect(audioContext.destination);
-  }
+  // Merge back to stereo
+  leftGain.connect(merger, 0, 0);   // Left channel
+  rightGain.connect(merger, 0, 1);  // Right channel
+
+  merger.connect(audioContext.destination);
 }
 
 // ------------------------
-// Start playback
+// Start / stop
 // ------------------------
 export function playAudio() {
   if (!audioBuffer) {
@@ -72,38 +54,17 @@ export function playAudio() {
     return;
   }
 
-  // Stop old source if any
-  if (source) {
-    try { source.stop(); } catch {}
-    try { source.disconnect(); } catch {}
-    source = null;
-  }
+  stopAudio(); // stop old one if any
 
-  // New source
   source = audioContext.createBufferSource();
   source.buffer = audioBuffer;
-  source.loop = true; // optional—remove if you don't want looping
+  source.loop = true;
 
   ensureOutputChain();
-
-  if (stereo) {
-    source.connect(stereo);
-  } else {
-    // Fallback: feed into splitter chain
-    source.connect(splitter);
-  }
-
+  source.connect(splitter);
   source.start();
-
-  source.onended = () => {
-    try { source.disconnect(); } catch {}
-    source = null;
-  };
 }
 
-// ------------------------
-// Stop playback (helper)
-// ------------------------
 export function stopAudio() {
   if (source) {
     try { source.stop(); } catch {}
@@ -113,82 +74,53 @@ export function stopAudio() {
 }
 
 // ------------------------
-// Update pan based on camera.position.x in [0, 60]
-// Cross stereo field TWICE: period = 30 (0→30 one L↔R cycle, 30→60 second cycle)
-// Triangle wave: pan = 1 - 4 * | frac(x/30) - 0.5 |
-// Then clamp to [-1, 1] and smooth updates.
+// Hard L/R pan update: 2 sweeps over x ∈ [0,60]
 // ------------------------
 export function updatePan() {
-  if (!stereo && !leftGain) return; // not ready yet
+  if (!leftGain || !rightGain) return;
 
-  const x = camera.position.x;    // your camera x
-  const minX = 0;
-  const maxX = 60;
-
-  // Clamp to domain just in case
-  const xClamped = Math.min(maxX, Math.max(minX, x));
-
-  // Normalize by triangle period (30)
-  const period = 30;
-  const t = (xClamped % period) / period; // 0..1 within each 30-unit span
-
-  // Triangle wave in [-1, +1], with:
-  // t=0   -> -1 (Left)
-  // t=0.5 -> +1 (Right)
-  // t=1   -> -1 (Left)
+  const x = camera.position.x;
+  const period = 30;  // 0–30 = first sweep, 30–60 = second
+  const t = ((x % period) / period); // 0..1 in each half
+  // Triangle wave from -1..+1 (Left→Right→Left)
   let pan = 1 - 4 * Math.abs(t - 0.5);
-  // Clamp (floating math safety)
   pan = Math.max(-1, Math.min(1, pan));
 
+  // Hard-panned gains (not constant power):
+  // pan=-1 → full left, none right
+  // pan= 0 → equal
+  // pan=+1 → full right, none left
+  const left = pan <= 0 ? 1 : 1 - pan;   // simple linear fade
+  const right = pan >= 0 ? 1 : 1 + pan;  // symmetrical
+
   const now = audioContext.currentTime;
-
-  if (stereo) {
-    // Smooth toward target to avoid zipper noise
-    stereo.pan.setTargetAtTime(pan, now, 0.02);
-  } else {
-    // Fallback: emulate StereoPanner
-    // Simple law: left = (1 - pan)/2, right = (1 + pan)/2  (pan ∈ [-1,1])
-    const l = (1 - pan) * 0.5;
-    const r = (1 + pan) * 0.5;
-
-    leftGain.gain.setTargetAtTime(l, now, 0.02);
-    rightGain.gain.setTargetAtTime(r, now, 0.02);
-  }
+  leftGain.gain.setTargetAtTime(left, now, 0.02);
+  rightGain.gain.setTargetAtTime(right, now, 0.02);
 }
 
 // ------------------------
-// Initialize + wire the UI button
+// Init with button
 // ------------------------
 export async function initAudio(url, playButtonId) {
   await loadAudio(url);
 
-  const button = document.getElementById(playButtonId);
-  if (!button) {
-    console.warn(`Button #${playButtonId} not found; audio will not be user-toggleable.`);
+  const btn = document.getElementById(playButtonId);
+  if (!btn) {
+    console.warn(`Button #${playButtonId} not found.`);
     return;
   }
-
-  button.disabled = false;
+  btn.disabled = false;
 
   const updateLabel = () => {
-    const enabled = !!source;
-    button.innerText = enabled ? "Disable Audio ♬" : "Enable Audio ♬";
+    btn.textContent = source ? "Disable Audio ♬" : "Enable Audio ♬";
   };
-
   updateLabel();
 
-  button.addEventListener("click", async () => {
-    if (audioContext.state === "suspended") {
-      await audioContext.resume();
-    }
+  btn.addEventListener("click", async () => {
+    if (audioContext.state === "suspended") await audioContext.resume();
 
-    if (source) {
-      // Toggle OFF
-      stopAudio();
-    } else {
-      // Toggle ON
-      playAudio();
-    }
+    if (source) stopAudio();
+    else playAudio();
 
     updateLabel();
   });
