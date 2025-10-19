@@ -4,11 +4,18 @@
 {% block title %}Edit Profile{% endblock %}
 
 {% block content %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
 <div class="flex flex-col justify-center px-4">
-    <div class="w-full max-w-2xl bg-gray-100 backdrop-blur-md rounded-2xl p-10 shadow-lg mx-auto">
+    <!-- slightly wider form container -->
+    <div class="w-full max-w-3xl bg-gray-100 backdrop-blur-md rounded-2xl p-10 shadow-lg mx-auto">
         <h1 class="text-3xl font-bold mb-6 text-center text-gray-900">Edit Your Profile</h1>
 
-        <form method="post" enctype="multipart/form-data" class="space-y-5">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
             {{ user_form.non_field_errors }}
             {{ profile_form.non_field_errors }}
@@ -60,11 +67,11 @@
                 {% endfor %}
             </div>
 
-            <!-- Feedback (wider field) -->
-            <div>
+            <!-- Feedback (truly wider) -->
+            <div class="w-full">
                 <label for="{{ profile_form.feedback.id_for_label }}" class="block font-semibold mb-1 text-gray-800">Feedback (about this site)</label>
                 <textarea name="{{ profile_form.feedback.name }}" id="{{ profile_form.feedback.id_for_label }}"
-                          class="w-full p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700 h-40 resize-y"
+                          class="w-full p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700 h-28 resize-y"
                           placeholder="Share your feedback about the site">{{ profile_form.feedback.value }}</textarea>
                 {% for error in profile_form.feedback.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ error }}</p>
@@ -79,6 +86,9 @@
     </div>
 </div>
 {% endblock %}
+
+{% endblock %}
+
 
 
 
