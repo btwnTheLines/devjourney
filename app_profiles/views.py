@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from .models import Profile
 
 # Create your views here.
+@login_required(login_url='home')
 def profiles_list(request):
     """
     Display all profiles in the database
@@ -106,5 +107,6 @@ def logout_view(request):
     """
     logout(request)
     return JsonResponse({'success': True, 'message': 'Logged out successfully'})
+
 
 
