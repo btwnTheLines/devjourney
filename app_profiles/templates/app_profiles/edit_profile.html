@@ -5,8 +5,8 @@
 
 {% block content %}
 <div class="flex flex-col justify-center px-4">
-    <div class="w-full max-w-md bg-black/90 backdrop-blur-md rounded-2xl p-8 shadow-lg mx-auto">
-        <h1 class="text-3xl font-bold mb-6 text-center text-white">Edit Your Profile</h1>
+    <div class="w-full max-w-2xl bg-gray-100 backdrop-blur-md rounded-2xl p-10 shadow-lg mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-900">Edit Your Profile</h1>
 
         <form method="post" enctype="multipart/form-data" class="space-y-5">
             {% csrf_token %}
@@ -14,71 +14,72 @@
             {{ profile_form.non_field_errors }}
 
             <!-- Email -->
-            <div>
-                <label for="{{ user_form.email.id_for_label }}" class="block font-semibold mb-1 text-white">Email</label>
+            <div class="max-w-md">
+                <label for="{{ user_form.email.id_for_label }}" class="block font-semibold mb-1 text-gray-800">Email</label>
                 <input type="email" name="{{ user_form.email.name }}" id="{{ user_form.email.id_for_label }}"
-                       class="w-full p-3 border border-gray-600 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
+                       class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700"
                        value="{{ user_form.email.value }}" placeholder="Enter email">
                 {% for error in user_form.email.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+                    <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
             </div>
 
             <!-- First Name -->
-            <div>
-                <label for="{{ user_form.first_name.id_for_label }}" class="block font-semibold mb-1 text-white">First Name</label>
+            <div class="max-w-md">
+                <label for="{{ user_form.first_name.id_for_label }}" class="block font-semibold mb-1 text-gray-800">First Name</label>
                 <input type="text" name="{{ user_form.first_name.name }}" id="{{ user_form.first_name.id_for_label }}"
-                       class="w-full p-3 border border-gray-600 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
+                       class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700"
                        value="{{ user_form.first_name.value }}" placeholder="Enter first name">
                 {% for error in user_form.first_name.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+                    <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
             </div>
 
             <!-- Last Name -->
-            <div>
-                <label for="{{ user_form.last_name.id_for_label }}" class="block font-semibold mb-1 text-white">Last Name</label>
+            <div class="max-w-md">
+                <label for="{{ user_form.last_name.id_for_label }}" class="block font-semibold mb-1 text-gray-800">Last Name</label>
                 <input type="text" name="{{ user_form.last_name.name }}" id="{{ user_form.last_name.id_for_label }}"
-                       class="w-full p-3 border border-gray-600 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
+                       class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700"
                        value="{{ user_form.last_name.value }}" placeholder="Enter last name">
                 {% for error in user_form.last_name.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+                    <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
             </div>
 
             <!-- Avatar -->
-            <div>
-                <label for="{{ profile_form.avatar.id_for_label }}" class="block font-semibold mb-1 text-white">Avatar (optional)</label>
+            <div class="max-w-md">
+                <label for="{{ profile_form.avatar.id_for_label }}" class="block font-semibold mb-1 text-gray-800">Avatar (optional)</label>
                 <input type="file" name="{{ profile_form.avatar.name }}" id="{{ profile_form.avatar.id_for_label }}"
-                       class="w-full p-2 border border-gray-600 rounded-lg bg-black text-white file:bg-gray-800 file:text-white file:border-none file:p-2 hover:file:bg-gray-700">
+                       class="w-full p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 file:bg-gray-200 file:text-gray-900 file:border-none file:p-2 hover:file:bg-gray-300">
                 {% if profile_form.instance.avatar %}
                     <img src="{{ profile_form.instance.avatar.url }}" alt="Avatar"
-                         class="mt-2 w-32 h-32 rounded-full object-cover border border-gray-600">
+                         class="mt-2 w-32 h-32 rounded-full object-cover border border-gray-300">
                 {% endif %}
                 {% for error in profile_form.avatar.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+                    <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
             </div>
 
             <!-- Feedback -->
             <div>
-                <label for="{{ profile_form.feedback.id_for_label }}" class="block font-semibold mb-1 text-white">Feedback (about this site)</label>
+                <label for="{{ profile_form.feedback.id_for_label }}" class="block font-semibold mb-1 text-gray-800">Feedback (about this site)</label>
                 <textarea name="{{ profile_form.feedback.name }}" id="{{ profile_form.feedback.id_for_label }}"
-                          class="w-full p-3 border border-gray-600 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white h-24"
+                          class="w-full p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-700 h-40 resize-y"
                           placeholder="Share your feedback about the site">{{ profile_form.feedback.value }}</textarea>
                 {% for error in profile_form.feedback.errors %}
-                    <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+                    <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
             </div>
 
             <button type="submit"
-                    class="w-full bg-white text-black p-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+                    class="w-full bg-gray-800 text-white p-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
                 Save Changes
             </button>
         </form>
     </div>
 </div>
 {% endblock %}
+
 
 
 
