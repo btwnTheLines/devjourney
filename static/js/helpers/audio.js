@@ -74,9 +74,9 @@ export async function loadAudio(url) {
 // Load three IRs (adjust paths if needed)
 async function loadImpulseResponses() {
   const [small, large, medium] = await Promise.all([
-    decode("../static/ir/small.wav"),
-    decode("../static/ir/large.wav"),
-    decode("../static/ir/medium.wav"),
+    decode("../../ir/small.wav"),
+    decode("../../ir/large.wav"),
+    decode("../../ir/medium.wav"),
   ]);
   return { small, large, medium };
 }
@@ -331,3 +331,4 @@ export async function initAudio(url, playButtonId) {
     setLabel();
   });
 }
+
