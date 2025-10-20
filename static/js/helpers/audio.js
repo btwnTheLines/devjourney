@@ -286,22 +286,41 @@ export function updatePan() {
 // Init
 // ----------------------------------------------------
 export async function initAudio(url, playButtonId) {
-  const [_, irs] = await Promise.all([loadAudio(url), loadImpulseResponses()]);
-  ensureGraphBuilt(irs);
+  try {
+    console.log("🎧 Initializing audio system...");
 
-  const button = document.getElementById(playButtonId);
-  if (!button) {
-    console.warn(`⚠️ Button #${playButtonId} not found`);
-    return;
-  }
-  button.disabled = false;
-  const setLabel = () =>
-    (button.textContent = source ? "Disable Audio ♬" : "Enable Audio ♬");
-  setLabel();
-  button.addEventListener("click", async () => {
-    if (audioContext.state === "suspended") await audioContext.resume();
-    if (source) stopAudio();
-    else playAudio();
+    const [_, irs] = await Promise.all([
+      loadAudio(url),
+      loadImpulseResponses(),
+    ]);
+
+    if (!irs || !irs.small || !irs.large || !irs.medium) {
+      console.error("⚠️ One or more impulse responses failed to load:", irs);
+      return;
+    }
+
+    ensureGraphBuilt(irs);
+
+    const button = document.getElementById(playButtonId);
+    if (!button) {
+      console.warn(`⚠️ Button #${playButtonId} not found`);
+      return;
+    }
+
+    button.disabled = false;
+    const setLabel = () =>
+      (button.textContent = source ? "Disable Audio ♬" : "Enable Audio ♬");
     setLabel();
-  });
+
+    button.addEventListener("click", async () => {
+      if (audioContext.state === "suspended") await audioContext.resume();
+      if (source) stopAudio();
+      else playAudio();
+      setLabel();
+    });
+
+    console.log("✅ Audio initialized successfully");
+  } catch (err) {
+    console.error("❌ Audio init failed:", err);
+  }
 }
