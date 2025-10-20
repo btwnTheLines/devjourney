@@ -1,6 +1,7 @@
 // helpers/audio.js
-// IMMERSIVE VERSION — enhanced intensity + L/R compression peaks
-// Comments show tweakable intensity parameters throughout.
+// ULTRA IMMERSIVE — Intense spatial audio experience version
+// Everything breathes and reacts dramatically to camera position,
+// but still safe for speakers and comfortable for listening.
 
 import { camera } from "../core/threeSetup.js";
 
@@ -38,6 +39,7 @@ let compressor = null;
 let compPreEQ = null;
 let compWet = null;
 let compMakeup = null;
+let limiter = null; // final limiter to prevent overloads
 
 // ----------------------------------------------------
 // Utilities
@@ -71,11 +73,7 @@ async function loadImpulseResponses() {
     decode("../../ir/large.wav"),
     decode("../../ir/medium.wav"),
   ]);
-  console.log("✅ IRs loaded:", {
-    small: !!small,
-    large: !!large,
-    medium: !!medium,
-  });
+  console.log("✅ IRs loaded:", { small: !!small, large: !!large, medium: !!medium });
   return { small, large, medium };
 }
 
@@ -85,6 +83,7 @@ async function loadImpulseResponses() {
 function ensureGraphBuilt(irBuffers) {
   if (mix) return;
 
+  // === PAN SPLITTER ===
   splitter = audioContext.createChannelSplitter(2);
   leftGain = audioContext.createGain();
   rightGain = audioContext.createGain();
@@ -99,14 +98,14 @@ function ensureGraphBuilt(irBuffers) {
 
   // === DELAY ===
   delayNode = audioContext.createDelay();
-  delayNode.delayTime.value = 0.5;
+  delayNode.delayTime.value = 0.55;
   delayFeedback = audioContext.createGain();
-  delayFeedback.gain.value = 0.55;
+  delayFeedback.gain.value = 0.65; // INTENSITY CONTROL
   delayWet = audioContext.createGain();
-  delayWet.gain.value = 0.4;
+  delayWet.gain.value = 0.5; // Louder echoes
   delayTone = audioContext.createBiquadFilter();
   delayTone.type = "lowpass";
-  delayTone.frequency.value = 7000;
+  delayTone.frequency.value = 8000;
   delayNode.connect(delayFeedback);
   delayFeedback.connect(delayNode);
 
@@ -121,17 +120,16 @@ function ensureGraphBuilt(irBuffers) {
   convWetSmall = audioContext.createGain();
   convWetLarge = audioContext.createGain();
   convWetMedium = audioContext.createGain();
-
-  convWetSmall.gain.value = 0.4;
+  convWetSmall.gain.value = 0.5;
   convWetLarge.gain.value = 0.0;
   convWetMedium.gain.value = 0.0;
 
   reverbBus = audioContext.createGain();
   reverbPreDelay = audioContext.createDelay();
-  reverbPreDelay.delayTime.value = 0.04;
+  reverbPreDelay.delayTime.value = 0.05;
   reverbTone = audioContext.createBiquadFilter();
   reverbTone.type = "lowpass";
-  reverbTone.frequency.value = 9000;
+  reverbTone.frequency.value = 10000;
 
   // === COMPRESSION (parallel) ===
   mix = audioContext.createGain();
@@ -141,22 +139,32 @@ function ensureGraphBuilt(irBuffers) {
   compPreEQ.gain.value = 0;
 
   compressor = audioContext.createDynamicsCompressor();
-  compressor.threshold.value = -28;
-  compressor.ratio.value = 6;
+  compressor.threshold.value = -30;
+  compressor.ratio.value = 7;
   compressor.attack.value = 0.015;
-  compressor.release.value = 0.12;
+  compressor.release.value = 0.15;
 
   compMakeup = audioContext.createGain();
-  compMakeup.gain.value = 1.2;
+  compMakeup.gain.value = 1.4;
   compWet = audioContext.createGain();
-  compWet.gain.value = 0.6;
+  compWet.gain.value = 0.7; // INTENSITY CONTROL
+
+  // === SAFETY LIMITER ===
+  limiter = audioContext.createDynamicsCompressor();
+  limiter.threshold.value = -2;
+  limiter.knee.value = 0;
+  limiter.ratio.value = 20; // Hard limiting
+  limiter.attack.value = 0.001;
+  limiter.release.value = 0.1;
 
   // === WIRING ===
   merger.connect(dryGain).connect(mix);
 
+  // Delay
   merger.connect(delayNode);
   delayNode.connect(delayTone).connect(delayWet).connect(mix);
 
+  // Reverb
   merger.connect(reverbPreDelay);
   reverbPreDelay.connect(convolverSmall);
   reverbPreDelay.connect(convolverLarge);
@@ -166,10 +174,13 @@ function ensureGraphBuilt(irBuffers) {
   convolverMedium.connect(convWetMedium).connect(reverbBus);
   reverbBus.connect(reverbTone).connect(mix);
 
+  // Parallel compression
   merger.connect(compPreEQ).connect(compressor).connect(compMakeup).connect(compWet).connect(mix);
 
-  mix.connect(audioContext.destination);
-  console.log("✅ Audio graph built successfully");
+  // Final limiter
+  mix.connect(limiter).connect(audioContext.destination);
+
+  console.log("✅ Audio graph built successfully (Intense mode)");
 }
 
 // ----------------------------------------------------
@@ -186,7 +197,7 @@ export function playAudio() {
   source.loop = true;
   source.connect(splitter);
   source.start();
-  console.log("▶️ Audio playing");
+  console.log("▶️ Audio playing (intense)");
 }
 
 export function stopAudio() {
@@ -195,23 +206,102 @@ export function stopAudio() {
       source.stop();
       source.disconnect();
     } catch {}
-    console.log("⏹️ Audio stopped");
     source = null;
   }
 }
 
 // ----------------------------------------------------
-// Update FX envelopes (called each frame)
+// Update FX envelopes — dramatic motion
 // ----------------------------------------------------
 export function updatePan() {
   if (!leftGain || !rightGain) return;
   const x = clamp(camera.position.x, 0, 60);
   const now = audioContext.currentTime;
 
-  // ===== 1) HARD L/R PAN =====
+  // ===== 1) HARD PAN =====
   const period = 30;
   const t = (x % period) / period;
   let pan = 1 - 4 * Math.abs(t - 0.5);
   pan = clamp(pan, -1, 1);
   let L = pan <= 0 ? 1 : 1 - pan;
-  let R = pan >= 0 ? 1 :
+  let R = pan >= 0 ? 1 : 1 + pan;
+  leftGain.gain.setTargetAtTime(L, now, 0.02);
+  rightGain.gain.setTargetAtTime(R, now, 0.02);
+
+  // ===== 2) DELAY =====
+  const delayPeak = gauss(x, 27.5, 6.0);
+  const wetDelay = lerp(0.3, 1.0, delayPeak);
+  delayWet.gain.setTargetAtTime(wetDelay, now, 0.05);
+  const fb = lerp(0.5, 0.85, delayPeak);
+  delayFeedback.gain.setTargetAtTime(fb, now, 0.05);
+  const toneCut = lerp(9000, 3500, delayPeak);
+  delayTone.frequency.setTargetAtTime(toneCut, now, 0.05);
+
+  // ===== 3) REVERB CROSSFADE =====
+  let wSmall = 0, wLarge = 0, wMedium = 0;
+  if (x <= 15) {
+    const k = x / 15;
+    wSmall = lerp(0.4, 1.0, k);
+  } else if (x <= 45) {
+    const k = (x - 15) / 30;
+    wSmall = lerp(1.0, 0.0, k);
+    wLarge = lerp(0.0, 1.5, k); // INTENSE reverb zone
+  } else {
+    const k = (x - 45) / 15;
+    wLarge = lerp(1.5, 0.0, k);
+    wMedium = lerp(0.0, 1.0, k);
+  }
+  convWetSmall.gain.setTargetAtTime(wSmall, now, 0.08);
+  convWetLarge.gain.setTargetAtTime(wLarge, now, 0.08);
+  convWetMedium.gain.setTargetAtTime(wMedium, now, 0.08);
+
+  const pd = lerp(0.03, 0.09, delayPeak);
+  reverbPreDelay.delayTime.setTargetAtTime(pd, now, 0.05);
+  reverbTone.frequency.setTargetAtTime(lerp(10000, 5000, delayPeak), now, 0.05);
+
+  // ===== 4) COMPRESSION =====
+  const compStrength = Math.max(gauss(x, 30, 5.0), gauss(x, 60, 5.0));
+  const shelfGain = lerp(0, 14, compStrength);
+  compPreEQ.gain.setTargetAtTime(shelfGain, now, 0.05);
+  let thr = lerp(-22, -40, compStrength);
+  let rat = lerp(5, 14, compStrength);
+  let makeup = lerp(1.2, 2.2, compStrength);
+  let wetAmt = lerp(0.4, 1.0, compStrength);
+
+  // ---- PAN PEAK BOOST ----
+  const panPeak = Math.abs(pan);
+  const peakBoost = gauss(panPeak, 1.0, 0.25);
+  thr -= peakBoost * 10;
+  rat += peakBoost * 8;
+  makeup += peakBoost * 1.4;
+  wetAmt += peakBoost * 0.5;
+
+  compressor.threshold.setTargetAtTime(thr, now, 0.05);
+  compressor.ratio.setTargetAtTime(rat, now, 0.05);
+  compWet.gain.setTargetAtTime(wetAmt, now, 0.05);
+  compMakeup.gain.setTargetAtTime(makeup, now, 0.05);
+}
+
+// ----------------------------------------------------
+// Init
+// ----------------------------------------------------
+export async function initAudio(url, playButtonId) {
+  const [_, irs] = await Promise.all([loadAudio(url), loadImpulseResponses()]);
+  ensureGraphBuilt(irs);
+
+  const button = document.getElementById(playButtonId);
+  if (!button) {
+    console.warn(`⚠️ Button #${playButtonId} not found`);
+    return;
+  }
+  button.disabled = false;
+  const setLabel = () =>
+    (button.textContent = source ? "Disable Audio ♬" : "Enable Audio ♬");
+  setLabel();
+  button.addEventListener("click", async () => {
+    if (audioContext.state === "suspended") await audioContext.resume();
+    if (source) stopAudio();
+    else playAudio();
+    setLabel();
+  });
+}
