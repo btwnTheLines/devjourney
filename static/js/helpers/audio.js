@@ -5,7 +5,7 @@
 
 import { camera } from "../core/threeSetup.js";
 
-export const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let audioBuffer = null;
 let source = null;
 
@@ -213,7 +213,7 @@ export function stopAudio() {
 // ----------------------------------------------------
 // Update FX envelopes — dramatic motion
 // ----------------------------------------------------
-export function updatePan() {
+function updatePan() {
   console.log("updatePan called");
   if (!leftGain || !rightGain) return;
   const x = clamp(camera.position.x, 0, 60);
@@ -326,4 +326,5 @@ export async function initAudio(url, playButtonId) {
     console.error("❌ Audio init failed:", err);
   }
 }
+
 
