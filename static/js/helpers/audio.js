@@ -214,6 +214,7 @@ export function stopAudio() {
 // Update FX envelopes — dramatic motion
 // ----------------------------------------------------
 export function updatePan() {
+  console.log("updatePan called");
   if (!leftGain || !rightGain) return;
   const x = clamp(camera.position.x, 0, 60);
   const now = audioContext.currentTime;
@@ -286,6 +287,7 @@ export function updatePan() {
 // Init
 // ----------------------------------------------------
 export async function initAudio(url, playButtonId) {
+  console.log("initAudio called");
   try {
     console.log("🎧 Initializing audio system...");
 
@@ -324,3 +326,4 @@ export async function initAudio(url, playButtonId) {
     console.error("❌ Audio init failed:", err);
   }
 }
+
