@@ -125,23 +125,31 @@
     <h2 class="text-2xl font-semibold mb-4 text-black">Confirm Logout</h2>
     <p class="text-gray-700 mb-6">Are you sure you want to log out?</p>
     <div class="flex justify-between">
-      <button id="confirmLogout"
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button id="confirmLogout"
               class="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition">
-        Yes, Logout
-      </button>
-      <button id="closeLogoutModal"
+          Yes, Logout
+        </button>
+      </form>
+        <button id="closeLogoutModal"
               class="bg-white text-black border border-gray-400 px-4 py-2 rounded-md hover:bg-black hover:text-white transition">
         Cancel
-      </button>
+        </button>
     </div>
   </div>
 </div>
-
+    
 <!-- Main content -->
-<main class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-6">
+<main class="relative z-10 flex flex-col items-center justify-center px-6 py-6 h-screen">
     {% block content %}{% endblock %}
 </main>
-
+    
+<!-- Toast container (global) -->
+<div id="toast"
+     class="fixed top-4 right-4 z-[60] hidden rounded-xl bg-neutral-800/90 border border-white/10 px-4 py-3 text-sm shadow-lg"
+     role="status" aria-live="polite"></div>
+    
 <!-- Fade-out preloader script -->
 <script>
 window.addEventListener("load", () => {
@@ -150,14 +158,24 @@ window.addEventListener("load", () => {
 });
 </script>
 
-<!-- Three.js scene loader -->
-<script type="module" src="{% static 'js/assets/main-Cv_pXf62.js' %}"></script>
+<!-- Main Javascript module -->
+<script type="module" src="{% static 'js/main-J-nXJHSl.js' %}"></script>
 
 <!-- Login and logout logic -->
-<script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/auth.js' %}" defer></script>
+    
+<!-- Toast logic -->
+<script src="{% static 'js/toast.js' %}" defer></script>
 
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 

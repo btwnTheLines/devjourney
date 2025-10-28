@@ -2,10 +2,11 @@ from .forms import LoginForm, SignUpForm, ProfileForm, UserForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.contrib import messages #Flashes success/error messages to the template
 from django.http import JsonResponse
+from django.db import transaction
+from django.urls import reverse
 from .models import Profile
 
 # Create your views here.
@@ -47,7 +48,7 @@ def signup(request):
         form = SignUpForm() #empty form for GET requests
         return render(request, 'app_profiles/signup.html', {'form': form, 'page_id': 'signUp'})
 
-@login_required
+@login_required(login_url='home')
 def edit_profile(request):
     """
     Displays user profile
@@ -99,14 +100,27 @@ def login_view(request):
         return JsonResponse({'success': False, 'message': 'Invalid form submission'})
 
 
-@login_required
+@login_required(login_url='home')
 @require_POST
 def logout_view(request):
     """
     Handles AJAX logout requests.
     """
     logout(request)
-    return JsonResponse({'success': True, 'message': 'Logged out successfully'})
+    #return JsonResponse({'success': True, 'message': 'Logged out successfully'})
+    return redirect('home') 
 
+@login_required(login_url='home')
+@require_POST
+def delete_account(request):
+    # Require the explicit text from the modal
+    if request.POST.get("confirm_text") != "DELETE":
+        messages.error(request, "Please type DELETE to confirm.")
+        return redirect("edit-profile")
 
+    with transaction.atomic():
+        request.user.delete()
 
+    # Flush session & redirect home with a query param for the toast
+    logout(request)
+    return redirect(f"{reverse('home')}?status=deleted")
