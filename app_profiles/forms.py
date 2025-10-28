@@ -1,8 +1,8 @@
-from django import forms
 from django.contrib.auth.forms import UserCreationForm # built-in Django signup form
 from django.contrib.auth import get_user_model # safer than importing User directly
 from django.contrib.auth.models import User
 from .models import Profile
+from django import forms
 
 User = get_user_model() # get the active User model (in case you swap it later)
 
@@ -45,7 +45,7 @@ class UserForm(forms.ModelForm):
     
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 
 #form for editing profile info (avatar + feedback)
@@ -74,4 +74,3 @@ class LoginForm(forms.Form):
             'class': 'w-full px-3 py-2 border rounded-md text-black'
         })
     )
-
