@@ -8,7 +8,7 @@
 <div class="absolute inset-0 -z-10 bg-gradient-to-b from-neutral-900/40 via-neutral-800/40 to-neutral-900/40"></div>
 
 {# Centered horizontally, balanced vertical padding #}
-<div class="w-full max-w-2xl mx-auto px-4 py-4">
+<div class="w-full max-w-2xl mx-auto px-4 py-2">
   <div class="rounded-2xl p-6 md:p-10 shadow-lg backdrop-blur
               bg-neutral-800/50 border border-white/15">
     {# Darker heading (closer to nav button background tone) #}
@@ -20,6 +20,26 @@
       {% csrf_token %}
       {{ user_form.non_field_errors }}
       {{ profile_form.non_field_errors }}
+
+      <!-- Username -->
+      <div class="max-w-md">
+        <label for="{{ user_form.username.id_for_label }}" class="block font-semibold mb-1 text-white/80">
+          Username
+        </label>
+        <input
+          type="text"
+          name="{{ user_form.username.name }}"
+          id="{{ user_form.username.id_for_label }}"
+          value="{{ user_form.username.value }}"
+          placeholder="Enter username"
+          class="w-full p-3 rounded-lg text-white placeholder-white/60
+                 bg-neutral-900/5 border border-white/50
+                 focus:outline-none focus:ring-2 focus:ring-blue-300/40 focus:border-white/30"
+        >
+        {% for error in user_form.username.errors %}
+          <p class="text-red-400 text-sm mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
 
       <!-- Email -->
       <div class="max-w-md">
@@ -135,6 +155,53 @@
         Save Changes
       </button>
     </form>
+
+    {# --- Delete account trigger (small muted red text) --- #}
+    <p class="mt-6 text-sm text-red-400/70 text-center">
+      Want to delete your account?
+      <button id="openDeleteModal" type="button" class="underline hover:text-red-300">
+        Delete profile
+      </button>
+    </p>
   </div>
 </div>
+
+{# --- Modal for delete account --- #}
+<div id="deleteModal"
+     class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60"
+     role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" aria-hidden="true">
+  <div class="w-full max-w-md rounded-2xl bg-neutral-800 border border-white/10 p-6">
+    <h2 id="deleteModalTitle" class="text-lg font-semibold text-red-300">Delete your account?</h2>
+    <p class="mt-2 text-sm text-neutral-300">
+      This permanently deletes your account and related data. This can’t be undone.
+    </p>
+
+    <form method="post" action="{% url 'account-delete' %}" class="mt-6 space-y-4">
+      {% csrf_token %}
+
+      <label class="block text-sm">
+        Type <span class="font-mono">DELETE</span> to confirm
+        <input id="confirmInput" name="confirm_text" autocomplete="off"
+               class="mt-2 w-full rounded-lg border border-neutral-600 bg-neutral-700 px-3 py-2 text-sm"
+               placeholder="DELETE">
+      </label>
+
+      <!-- simple server-side on/off gate -->
+      <input type="hidden" name="confirm" value="on">
+
+      <div class="mt-4 flex items-center justify-end gap-3">
+        <button id="cancelDelete" type="button"
+                class="px-4 py-2 rounded-xl bg-neutral-700 hover:bg-neutral-600">
+          Cancel
+        </button>
+        <button id="confirmDeleteBtn" type="submit" disabled
+                class="px-4 py-2 rounded-xl bg-red-600/60 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          Delete account
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="{% static 'js/delete_account.js' %}" defer></script>
 {% endblock %}
