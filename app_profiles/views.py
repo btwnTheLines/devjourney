@@ -40,7 +40,7 @@ def signup(request):
             user = form.save() # create User + attach avatar to Profile
             login(request, user) #auto-login after signup
             messages.success(request, "Welcome, your account has been created.")
-            return redirect('home') #Go to profiles page
+            return redirect('edit_profile') #Go to profiles page
         else:
             # If form is invalid, render the template with errors
             return render(request, 'app_profiles/signup.html', {'form': form, 'page_id': 'signUp'})
@@ -124,3 +124,4 @@ def delete_account(request):
     # Flush session & redirect home with a query param for the toast
     logout(request)
     return redirect(f"{reverse('home')}?status=deleted")
+
