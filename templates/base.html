@@ -144,7 +144,12 @@
 <main class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-6">
     {% block content %}{% endblock %}
 </main>
-
+    
+<!-- Toast container (global) -->
+<div id="toast"
+     class="fixed top-4 right-4 z-[60] hidden rounded-xl bg-neutral-800/90 border border-white/10 px-4 py-3 text-sm shadow-lg"
+     role="status" aria-live="polite"></div>
+    
 <!-- Fade-out preloader script -->
 <script>
 window.addEventListener("load", () => {
@@ -156,13 +161,15 @@ window.addEventListener("load", () => {
 <!-- Main Javascript module -->
 <script type="module" src="{% static 'js/main-J-nXJHSl.js' %}"></script>
 
-<!-- Toast container (global) -->
-<div id="toast"
-     class="fixed top-4 right-4 z-[60] hidden rounded-xl bg-neutral-800/90 border border-white/10 px-4 py-3 text-sm shadow-lg"
-     role="status" aria-live="polite"></div>
+<!-- Login and logout logic -->
+<script src="{% static 'js/auth.js' %}" defer></script>
+    
+<!-- Toast logic -->
+<script src="{% static 'js/toast.js' %}" defer></script>
 
 </body>
 </html>
+
 
 
 
