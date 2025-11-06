@@ -5,11 +5,11 @@
 
 {% block content %}
 {# Solid background (one colour) #}
-<div class="absolute inset-0 -z-10 bg-neutral-900/70"></div>
+<div class="pt-20 absolute inset-0 -z-10 bg-neutral-900/70"></div>
 
 {# Centered card with vertical whitespace #}
 <div class="w-full max-w-2xl mx-auto px-4">
-  <div class="rounded-2xl p-6 md:p-10 shadow-lg backdrop-blur bg-neutral-800/50 border border-white/15">
+  <div class="rounded-2xl pt-6 md:p-10 shadow-lg backdrop-blur bg-neutral-800/50 border border-white/15">
     <h1 class="text-2xl font-bold mb-8 text-center text-neutral-200 tracking-tight">
       Edit Your Profile
     </h1>
@@ -128,8 +128,8 @@
           name="{{ profile_form.feedback.name }}"
           id="{{ profile_form.feedback.id_for_label }}"
           placeholder="Share your feedback about the site"
-          class="w-full p-4 h-20 resize-y rounded-lg text-white placeholder-white/60
-                 bg-neutral-900/5 border border-white/50
+          class="w-full p-4 h-20 rounded-lg text-white placeholder-white/60
+                 bg-neutral-900/5 border border-white/50 no-scrollbar
                  focus:outline-none focus:ring-2 focus:ring-blue-300/40 focus:border-white/30"
         >{{ profile_form.feedback.value }}</textarea>
         {% for error in profile_form.feedback.errors %}
@@ -189,6 +189,6 @@
   </div>
 </div>
 
-<script src="{% static 'js/delete_account.js' %}" defer></script>
+<script src="{% static 'js/minified_js/delete_account-CvQFh-kT.js' %}" defer></script>
 {% endblock %}
 

@@ -5,9 +5,11 @@ Django settings for myproject project.
 import os
 import dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")   # <-- this must run before env reads
 
 # --- Security ---
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-default-key")
@@ -45,17 +47,21 @@ MIDDLEWARE = [
 ]
 
 # --- HTTPS & Security Settings ---
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-X_FRAME_OPTIONS = "DENY"
+
+# Uncomment the below for production
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True
+# X_FRAME_OPTIONS = "DENY"
 
 # --- Database ---
 DATABASES = {
     "default": dj_database_url.config(
         default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
-        ssl_require=True,
+
+        # Uncomment the below for production
+        #ssl_require=True,
     )
 }
 

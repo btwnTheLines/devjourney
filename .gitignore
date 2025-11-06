@@ -1,0 +1,35 @@
+# === Python / Django ===
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+db.sqlite3
+venv/
+.env
+*.env
+*.local
+*.DS_Store
+
+# === Django static files ===
+staticfiles/
+
+# Ignore all JS except the minified bundle folder
+static/js/
+!static/js/minified_js/
+
+# === Git / OS ===
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+*.bak
+*.tmp
+Thumbs.db
+
+# === Misc ===
+coverage/
+.cache/
+pytest_cache/

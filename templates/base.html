@@ -13,7 +13,8 @@
     <!-- Custom stylesheet -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body data-page="{{ page_id }}" class="text-white font-sans min-h-screen overflow-hidden relative">
+
+<body data-page="{{ page_id }}" class="text-white font-sans min-h-screen overflow-x-hidden relative">
 
 <div id="preloader">
   <div class="loader">
@@ -37,63 +38,63 @@
 <div id="three-background" class="fixed inset-0 w-full h-full z-0 pointer-events-none"></div>
 
 <!-- Navigation -->
-<header class="fixed top-0 left-0 w-full z-20">
-    <nav class="flex justify-between items-center p-4 w-full">
-        {% if request.path != '/' %}
-            <a href="{% url 'home' %}" 
-               class="px-4 py-2 rounded-md border border-gray-400 font-semibold
-                      bg-white text-black transition-colors duration-300
-                      hover:bg-black hover:text-white">
-                ← Back to Torus Tube
+<header class="fixed top-0 left-0 w-full z-20 h-16">
+  <nav class="flex justify-between items-center p-4 w-full">
+      {% if request.path != '/' %}
+          <a href="{% url 'home' %}" 
+              class="px-4 py-2 rounded-md border border-gray-400 font-semibold
+                    bg-white text-black transition-colors duration-300
+                    hover:bg-black hover:text-white">
+              ← Back to Torus Tube
+          </a>
+      {% else %}
+          <div>
+              <button id="playBtn"
+                      class="rounded-lg bg-white text-black font-semibold px-4 py-2
+                              border border-gray-300 flex items-center justify-center
+                              hover:bg-black hover:text-white hover:border-gray-400
+                              transition-all duration-300">
+                  Enable Audio ♬
+              </button>
+          </div>
+      {% endif %}
+
+      <div class="flex items-center space-x-6">
+        {% if user.is_authenticated %}
+          <a href="{% url 'edit_profile' %}" 
+            class="hover:underline hover:underline-offset-5 transition-all">
+            Edit Profile
+          </a>
+
+            <a href="{% url 'profiles_list' %}" 
+                class="rounded-lg bg-white text-black font-semibold px-4 py-2 
+                      border border-gray-300 flex items-center
+                      hover:bg-black hover:text-white hover:border-blue-100 transition-all">
+                View User Feedback
             </a>
+
+            <!-- Logout button -->
+            <button id="openLogoutModal"
+                    class="rounded-lg bg-white text-black font-semibold px-4 py-2
+                            border border-gray-300 hover:bg-black hover:text-white transition-all">
+                Logout
+            </button>
         {% else %}
-            <div>
-                <button id="playBtn"
-                        class="rounded-lg bg-white text-black font-semibold px-4 py-2
-                               border border-gray-300 flex items-center justify-center
-                               hover:bg-black hover:text-white hover:border-gray-400
-                               transition-all duration-300">
-                    Enable Audio ♬
-                </button>
-            </div>
-        {% endif %}
+            <a href="{% url 'signup' %}" 
+                class="rounded-lg bg-white text-black font-semibold px-4 py-2 
+                      border border-gray-300 flex items-center
+                      hover:bg-black hover:text-white transition-all">
+                Give me feedback
+            </a>
 
-        <div class="flex items-center space-x-6">
-            {% if user.is_authenticated %}
-                <a href="{% url 'edit_profile' %}" 
-                   class="hover:underline hover:underline-offset-5 transition-all">
-                    Edit Profile
-                </a>
-
-                <a href="{% url 'profiles_list' %}" 
-                   class="rounded-lg bg-white text-black font-semibold px-4 py-2 
-                          border border-gray-300 flex items-center
-                          hover:bg-black hover:text-white hover:border-blue-100 transition-all">
-                    View User Feedback
-                </a>
-
-                <!-- Logout button -->
-                <button id="openLogoutModal"
-                        class="rounded-lg bg-white text-black font-semibold px-4 py-2
-                               border border-gray-300 hover:bg-black hover:text-white transition-all">
-                    Logout
-                </button>
-            {% else %}
-                <a href="{% url 'signup' %}" 
-                   class="rounded-lg bg-white text-black font-semibold px-4 py-2 
-                          border border-gray-300 flex items-center
-                          hover:bg-black hover:text-white transition-all">
-                    Give me feedback
-                </a>
-
-                <button id="openLoginModal"
-                        class="rounded-lg bg-white text-black font-semibold px-4 py-2
-                               border border-gray-300 hover:bg-black hover:text-white transition-all">
-                    Login
-                </button>
+            <button id="openLoginModal"
+                    class="rounded-lg bg-white text-black font-semibold px-4 py-2
+                            border border-gray-300 hover:bg-black hover:text-white transition-all">
+                Login
+            </button>
             {% endif %}
-        </div>
-    </nav>
+      </div>
+  </nav>
 </header>
 
 <!-- Login Modal -->
@@ -141,10 +142,30 @@
 </div>
     
 <!-- Main content -->
-<main class="relative z-10 flex flex-col items-center justify-center px-6 py-6 h-screen">
+<main class="relative z-10 px-6 h-screen pt-6">
     {% block content %}{% endblock %}
 </main>
-    
+
+<!-- Social Dock -->
+<div class="fixed left-4 bottom-6 z-40 hidden md:flex flex-col gap-3">
+  <div class="flex items-center">
+    <a href="https://github.com/btwnTheLines" target="_blank" aria-label="GitHub"
+      class="m-2 group grid place-items-center w-10 h-10 rounded-xl bg-white/10 backdrop-blur
+              border border-white/40 hover:bg-white/20 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/40">
+      <!-- Prefer an SVG; placeholder img works too -->
+      <img src="{% static 'social/github.png' %}" alt="" class="w-8 h-8 opacity-90 group-hover:opacity-100">
+      <span class="sr-only">GitHub</span>
+    </a>
+
+    <a href="https://www.linkedin.com/in/curbywilliams/" target="_blank" aria-label="LinkedIn"
+      class="m-2 group grid place-items-center w-10 h-10 rounded-xl bg-white/10 backdrop-blur
+              border border-white/40 hover:bg-white/20 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/40">
+      <img src="{% static 'social/linkedin.png' %}" alt="" class="w-7 h-7 opacity-90 group-hover:opacity-100">
+      <span class="sr-only">LinkedIn</span>
+    </a>
+  </div>
+</div>
+
 <!-- Toast container (global) -->
 <div id="toast"
      class="fixed top-4 right-4 z-[60] hidden rounded-xl bg-neutral-800/90 border border-white/10 px-4 py-3 text-sm shadow-lg"
@@ -159,13 +180,13 @@ window.addEventListener("load", () => {
 </script>
 
 <!-- Main Javascript module -->
-<script type="module" src="{% static 'js/main-J-nXJHSl.js' %}"></script>
+<script type="module" src="{% static 'js/minified_js/main-KYSKifWK.js' %}"></script>
 
 <!-- Login and logout logic -->
-<script src="{% static 'js/auth.js' %}" defer></script>
+<script src="{% static 'js/minified_js/auth-_HHiysDg.js' %}" defer></script>
     
 <!-- Toast logic -->
-<script src="{% static 'js/toast.js' %}" defer></script>
+<script src="{% static 'js/minified_js/toast-CKKnmtPn.js' %}" defer></script>
 
 </body>
 </html>

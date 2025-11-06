@@ -16,7 +16,7 @@
                 <label for="{{ form.username.id_for_label }}" class="block font-semibold mb-1 text-black">Username</label>
                 <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
                        class="w-full p-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
-                       value="{{ form.username.value }}" placeholder="Enter username">
+                       placeholder="Enter username">
                 {% for error in form.username.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
@@ -27,7 +27,7 @@
                 <label for="{{ form.email.id_for_label }}" class="block font-semibold mb-1 text-black">Email</label>
                 <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
                        class="w-full p-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
-                       value="{{ form.email.value }}" placeholder="Enter email">
+                       placeholder="Enter email">
                 {% for error in form.email.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
@@ -38,7 +38,7 @@
                 <label for="{{ form.first_name.id_for_label }}" class="block font-semibold mb-1 text-black">First Name</label>
                 <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}"
                        class="w-full p-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
-                       value="{{ form.first_name.value }}" placeholder="Enter first name">
+                       placeholder="Enter first name">
                 {% for error in form.first_name.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}
@@ -49,7 +49,7 @@
                 <label for="{{ form.last_name.id_for_label }}" class="block font-semibold mb-1 text-black">Last Name</label>
                 <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}"
                        class="w-full p-3 border border-gray-300 rounded-lg bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
-                       value="{{ form.last_name.value }}" placeholder="Enter last name">
+                       placeholder="Enter last name">
                 {% for error in form.last_name.errors %}
                     <p class="text-red-600 text-sm mt-1">{{ error }}</p>
                 {% endfor %}

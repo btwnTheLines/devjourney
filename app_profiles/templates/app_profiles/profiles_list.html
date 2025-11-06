@@ -6,34 +6,33 @@
 
 {% block content %}
 
+    <div class="px-40">
     {% if profiles %}
-        <div class="px-20 grid grid-cols-3 gap-6 justify-center">
-            {% for profile in profiles %}
-            <div class="bg-white/70 backdrop-blur-sm rounded-lg shadow-md p-6 flex flex-col items-center"
-                style="width: 400px; height: 350px; margin: 5%;">
-                
-                <!-- Avatar -->
-                {% if profile.avatar %}
-                    <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}"
-                        class="w-24 h-24 rounded-full object-cover mb-4">
-                {% else %}
-                    <img src="https://via.placeholder.com/100" alt="No Avatar"
-                        class="w-32 h-32 rounded-full object-cover mb-4">
-                {% endif %}
+    <!-- Viewport-height scroller starting below the header -->
+    <div class="flex-1 w-full text-center overflow-visible max-h-none">
+        <div class="px-40 grid grid-cols-3 gap-6 justify-center">
+        {% for profile in profiles %}
+            <div class="bg-white/70 backdrop-blur-sm rounded-lg shadow-md p-6 flex flex-col items-center w-[400px] h-[350px] mx-auto">
+            {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="w-24 h-24 rounded-full object-cover mb-4">
+            {% else %}
+                <img src="https://via.placeholder.com/100" alt="No Avatar" class="w-32 h-32 rounded-full object-cover mb-4">
+            {% endif %}
 
-                <!-- User info -->
-                <div class="flex-1 w-full overflow-y-hidden text-center">
-                    <strong class="text-xl font-semibold text-gray-900">{{ profile.user.username }}</strong>
-                    <div class="text-left">
-                        <p class="text-md text-gray-700 mt-2">{{ profile.feedback }}</p>
-                    </div>
+            <div class="flex-1 w-full overflow-y-auto no-scrollbar text-center max-h-40">
+                <strong class="text-xl font-semibold text-gray-900 block mb-2">{{ profile.user.username }}</strong>
+                <div class="text-left">
+                <p class="text-md text-gray-700 mt-2">{{ profile.feedback }}</p>
                 </div>
             </div>
-            {% endfor %}
+            </div>
+        {% endfor %}
         </div>
+    </div>
     {% else %}
-        <p class="text-center text-gray-600 mt-4">No profiles available.</p>
+    <p class="text-center text-gray-200 mt-4">No profiles available.</p>
     {% endif %}
+    </div>
 
 {% endblock %}
 
