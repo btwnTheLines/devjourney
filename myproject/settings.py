@@ -49,10 +49,10 @@ MIDDLEWARE = [
 # --- HTTPS & Security Settings ---
 
 # Uncomment the below for production
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_SSL_REDIRECT = True
-# X_FRAME_OPTIONS = "DENY"
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+X_FRAME_OPTIONS = "DENY"
 
 # --- Database ---
 DATABASES = {
@@ -61,7 +61,7 @@ DATABASES = {
         conn_max_age=600,
 
         # Uncomment the below for production
-        #ssl_require=True,
+        ssl_require=True,
     )
 }
 
