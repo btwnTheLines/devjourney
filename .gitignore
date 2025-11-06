@@ -15,9 +15,10 @@ venv/
 # === Django static files ===
 staticfiles/
 
-# Ignore all JS except the minified bundle folder
-static/js/
+# Ignore everything in static/js except the minified_js folder
+static/js/*
 !static/js/minified_js/
+!static/js/minified_js/**
 
 # === Git / OS ===
 .vscode/
